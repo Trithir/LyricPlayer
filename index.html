@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lyric Scroller</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #121212;
+            color: #f0f0f0;
+            font-family: system-ui, sans-serif;
+        }
+
+        .song-picker {
+            display: flex;
+            gap: 1em;
+            padding: 1em;
+            background: #1f1f1f;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .lyric-display {
+            height: calc(100vh - 60px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .highlight-bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 75px;
+            top: 33%;
+            margin-top: -30px;
+            pointer-events: none;
+            border-top: 2px solid #fff3;
+            border-bottom: 2px solid #fff3;
+            background: linear-gradient(90deg, #fff1 0%, #fff3 50%, #fff1 100%);
+            z-index: 2;
+        }
+
+        .lyric-container {
+            position: relative;
+            height: 80vh;
+            /* or any height you prefer */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .line {
+            text-align: center;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .line.active {
+            color: #fff;
+            font-weight: bold;
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+
+        select,
+        button {
+            background: #2a2a2a;
+            color: #f0f0f0;
+            border: 1px solid #444;
+            padding: 0.5em 1em;
+            font-size: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="song-picker" style="justify-content: center;">
+        <button onclick="restartScroll()">Restart</button>
+        <button onclick="toggleScroll()" id="scrollToggle">Play</button>
+    </div>
+
+    <div style="display: flex; height: calc(100vh - 60px);">
+        <ul id="songList" style="list-style: none; padding: 1em; margin: 0; background: #1f1f1f; width: 180px;
+      overflow-y: auto;">
+        </ul>
+        <div class="lyric-display" id="lyricDisplay" style="flex: 1;">
+            <div class="highlight-bar"></div>
+            <div class="lyric-container" id="lyricContainer"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
