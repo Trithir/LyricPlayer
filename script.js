@@ -29,45 +29,40 @@ window.onload = async function () {
 
   window.currentSongIndex = null;
 
-  let lastKeyTime = 0;
-  let keyPressCounts = {};
-
-  function handleKeyPress(key) {
-    const now = performance.now();
-    const delta = now - (keyPressCounts[key]?.lastTime || 0);
-    const threshold = 400; // ms for double-tap
-
-    if (!keyPressCounts[key]) keyPressCounts[key] = { count: 0, timer: null };
-
-    if (delta < threshold) {
-      keyPressCounts[key].count++;
-    } else {
-      keyPressCounts[key].count = 1;
-    }
-
-    keyPressCounts[key].lastTime = now;
-
-    clearTimeout(keyPressCounts[key].timer);
-    keyPressCounts[key].timer = setTimeout(() => {
-      const count = keyPressCounts[key].count;
-      if (key === "ArrowLeft") {
-        if (count === 2) toggleScroll();
-        else goToPreviousSong();
-      } else if (key === "ArrowRight") {
-        if (count === 2) restartScroll();
-        else goToNextSong();
-      }
-      keyPressCounts[key].count = 0;
-    }, threshold);
-  }
+  // --- New key handling logic ---
+  let longPressTimeout = null;
+  let longPressFired = false;
+  const LONG_PRESS_DURATION = 600; // ms
 
   document.addEventListener("keydown", (e) => {
+    if (e.repeat) return; // Ignore auto-repeat
     if (e.code === "ArrowLeft" || e.code === "ArrowRight") {
       e.preventDefault();
-      handleKeyPress(e.code);
+      longPressFired = false;
+      longPressTimeout = setTimeout(() => {
+        longPressFired = true;
+        if (e.code === "ArrowLeft") {
+          goToPreviousSong();
+        } else if (e.code === "ArrowRight") {
+          goToNextSong();
+        }
+      }, LONG_PRESS_DURATION);
     } else if (e.code === "Space") {
       e.preventDefault();
       toggleScroll();
+    }
+  });
+
+  document.addEventListener("keyup", (e) => {
+    if (e.code === "ArrowLeft" || e.code === "ArrowRight") {
+      clearTimeout(longPressTimeout);
+      if (!longPressFired) {
+        if (e.code === "ArrowLeft") {
+          toggleScroll();
+        } else if (e.code === "ArrowRight") {
+          restartScroll();
+        }
+      }
     }
   });
 };
